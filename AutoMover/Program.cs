@@ -17,12 +17,12 @@
 
             if (!GetSourcePath(args, out source))
             {
-                return;
+                Environment.Exit(1);
             }
 
             if (!GetTargetPath(out target, source))
             {
-                return;
+                Environment.Exit(1);
             }
 
             File.Move(source, target);
