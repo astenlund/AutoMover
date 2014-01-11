@@ -3,6 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMover", "AutoMover\AutoMover.csproj", "{02755F74-A783-48C6-A1E9-6DC8E6FA73BD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{885F4D40-16D4-4422-A258-61C39510145B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMover.Test", "AutoMover.Test\AutoMover.Test.csproj", "{EC48FF88-D7E9-4C67-8C1D-E8B1F8B9533F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,8 +17,15 @@ Global
 		{02755F74-A783-48C6-A1E9-6DC8E6FA73BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02755F74-A783-48C6-A1E9-6DC8E6FA73BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02755F74-A783-48C6-A1E9-6DC8E6FA73BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC48FF88-D7E9-4C67-8C1D-E8B1F8B9533F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC48FF88-D7E9-4C67-8C1D-E8B1F8B9533F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC48FF88-D7E9-4C67-8C1D-E8B1F8B9533F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC48FF88-D7E9-4C67-8C1D-E8B1F8B9533F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EC48FF88-D7E9-4C67-8C1D-E8B1F8B9533F} = {885F4D40-16D4-4422-A258-61C39510145B}
 	EndGlobalSection
 EndGlobal

@@ -55,31 +55,13 @@
         private static bool GetTargetPath(out string target, string source)
         {
             target = string.Empty;
+            
             var targetConfigFile = Path.Combine(Environment.CurrentDirectory, "target.txt");
 
             if (!File.Exists(targetConfigFile))
             {
                 ErrorMessage("Target config file not found: " + targetConfigFile);
                 return false;
-            }
-
-            var targetDir = (File.ReadLines(targetConfigFile).FirstOrDefault() ?? string.Empty).Trim();
-
-            if (string.IsNullOrEmpty(targetDir))
-            {
-                ErrorMessage("Target config file does not point to a directory.");
-                return false;
-            }
-
-            if (!Directory.Exists(targetDir))
-            {
-                ErrorMessage("Target directory could not be found: " + targetDir);
-                return false;
-            }
-
-            if (!Path.IsPathRooted(targetDir))
-            {
-                targetDir = Path.Combine(Environment.CurrentDirectory, targetDir);
             }
 
             var filename = Path.GetFileName(source);
@@ -90,9 +72,57 @@
                 return false;
             }
 
+            var extension = Path.GetExtension(filename);
+
+            if (string.IsNullOrEmpty(extension))
+            {
+                ErrorMessage("Unable to extract extension from source filename: " + filename);
+                return false;
+            }
+
+            var targetDir = GetTargetDir(targetConfigFile, extension);
+
+            if (string.IsNullOrEmpty(targetDir))
+            {
+                ErrorMessage("Syntax error in target config file. Location of file: " + targetConfigFile);
+                return false;
+            }
+
+            if (!Directory.Exists(targetDir))
+            {
+                ErrorMessage("Target directory could not be found: " + targetDir);
+                return false;
+            }
+
             target = Path.Combine(targetDir, filename);
 
             return true;
+        }
+
+        private static string GetTargetDir(string targetConfigFile, string extension)
+        {
+            var targetConfig = ParseTargetConfig(targetConfigFile);
+            
+            return targetConfig[extension.RemoveLeading(".")] ?? string.Empty;
+        }
+
+        private static Dictionary<string, string> ParseTargetConfig(string targetConfigFile)
+        {
+            var result = new Dictionary<string, string>();
+
+            foreach (var tuple in File.ReadLines(targetConfigFile)
+                                      .SkipWhile(s => s.StartsWith("#"))
+                                      .Select(s => Array.ConvertAll(s.Split('='), input => input.Trim()))
+                                      .TakeWhile(arr => arr.Length == 2)
+                                      .Select(strings => new Tuple<string, string>(strings[0].RemoveLeading("."), strings[1])))
+            {
+                var ext = tuple.Item1;
+                var dir = tuple.Item2;
+
+                result[ext] = dir;
+            }
+
+            return result;
         }
 
         private static void ErrorMessage(string msg)
