@@ -85,6 +85,7 @@
 
             if (filename == null)
             {
+                ErrorMessage("Could not extract filename from source path: " + source);
                 return false;
             }
 
