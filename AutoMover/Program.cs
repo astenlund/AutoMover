@@ -1,6 +1,7 @@
 ﻿namespace AutoMover
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Windows.Forms;
@@ -28,13 +29,13 @@
             File.Move(source, target);
         }
 
-        private static bool GetSourcePath(string[] args, out string source)
+        private static bool GetSourcePath(IList<string> args, out string source)
         {
             source = string.Empty;
 
             Environment.CurrentDirectory = Path.GetDirectoryName(Application.ExecutablePath) ?? string.Empty;
 
-            if (args.Length != 1)
+            if (args.Count != 1)
             {
                 ErrorMessage("Unexpected number of arguments.");
                 return false;
