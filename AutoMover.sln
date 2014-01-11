@@ -20,7 +20,6 @@ Global
 		{EC48FF88-D7E9-4C67-8C1D-E8B1F8B9533F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EC48FF88-D7E9-4C67-8C1D-E8B1F8B9533F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC48FF88-D7E9-4C67-8C1D-E8B1F8B9533F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EC48FF88-D7E9-4C67-8C1D-E8B1F8B9533F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
