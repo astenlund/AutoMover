@@ -7,7 +7,7 @@
     using System.Windows.Forms;
 
     /// <summary>
-    /// This class moves .torrent files from one directory to another.
+    /// This class moves files from one directory to another.
     /// </summary>
     public static class Program
     {
