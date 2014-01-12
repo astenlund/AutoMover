@@ -6,5 +6,10 @@
         {
             return str.StartsWith(substring) ? str.Substring(substring.Length, str.Length - substring.Length) : str;
         }
+
+        public static string FormatFileExtension(this string ext)
+        {
+            return ext.RemoveLeading(".").ToUpperInvariant();
+        }
     }
 }

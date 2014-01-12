@@ -103,7 +103,7 @@
         {
             var targetConfig = ParseTargetConfig(targetConfigFile);
             
-            return targetConfig[extension.RemoveLeading(".")] ?? string.Empty;
+            return targetConfig[extension.FormatFileExtension()] ?? string.Empty;
         }
 
         private static Dictionary<string, string> ParseTargetConfig(string targetConfigFile)
@@ -114,7 +114,7 @@
                                       .SkipWhile(s => s.StartsWith("#"))
                                       .Select(s => Array.ConvertAll(s.Split('='), input => input.Trim()))
                                       .TakeWhile(arr => arr.Length == 2)
-                                      .Select(strings => new Tuple<string, string>(strings[0].RemoveLeading("."), strings[1])))
+                                      .Select(strings => new Tuple<string, string>(strings[0].FormatFileExtension(), strings[1])))
             {
                 var ext = tuple.Item1;
                 var dir = tuple.Item2;
