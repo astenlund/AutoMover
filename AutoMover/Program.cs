@@ -14,7 +14,15 @@
         [STAThread]
         public static void Main(string[] args)
         {
+            Environment.CurrentDirectory = Path.GetDirectoryName(Application.ExecutablePath) ?? string.Empty;
+
             string source, target;
+
+            if (args.Length != 1)
+            {
+                ErrorMessage("Unexpected number of arguments.");
+                Environment.Exit(1);
+            }
 
             if (!GetSourcePath(args, out source))
             {
@@ -31,16 +39,6 @@
 
         private static bool GetSourcePath(IList<string> args, out string source)
         {
-            source = string.Empty;
-
-            Environment.CurrentDirectory = Path.GetDirectoryName(Application.ExecutablePath) ?? string.Empty;
-
-            if (args.Count != 1)
-            {
-                ErrorMessage("Unexpected number of arguments.");
-                return false;
-            }
-
             source = args[0].Trim();
 
             if (!File.Exists(source))
