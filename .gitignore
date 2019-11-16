@@ -1,3 +1,5 @@
 _ReSharper.AutoMover/
 */bin/
 */obj/
+.idea/
+packages/
