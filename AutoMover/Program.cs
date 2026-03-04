@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Configuration;
 
 using static System.Windows.Forms.MessageBoxButtons;
@@ -23,14 +24,14 @@ public static class Program
             Environment.Exit(1);
         }
 
-        if (!GetTargetPath(out var target, source))
+        if (!GetTargetPath(out var target, out var overwrite, source))
         {
             Environment.Exit(1);
         }
 
         try
         {
-            File.Move(source, target);
+            File.Move(source, target, overwrite);
         }
         catch (Exception ex)
         {
@@ -53,9 +54,11 @@ public static class Program
         return true;
     }
 
-    private static bool GetTargetPath(out string target, string source)
+    [SuppressMessage("Performance", "CA1806:Do not ignore method results", Justification = "bool.TryParse sets the out parameter to false on failure, which is the desired default")]
+    private static bool GetTargetPath(out string target, out bool overwrite, string source)
     {
         target = string.Empty;
+        overwrite = false;
 
         IConfiguration config;
 
@@ -84,11 +87,12 @@ public static class Program
             return false;
         }
 
-        var targetDir = config["Targets:" + extension.RemoveLeading(".")];
+        var extensionKey = extension.RemoveLeading(".");
+        var targetDir = config["Targets:" + extensionKey + ":Directory"];
 
         if (string.IsNullOrEmpty(targetDir))
         {
-            ErrorMessage("No target directory configured for extension '" + extension.RemoveLeading(".") + "'");
+            ErrorMessage("No target directory configured for extension '" + extensionKey + "'");
 
             return false;
         }
@@ -100,6 +104,7 @@ public static class Program
             return false;
         }
 
+        bool.TryParse(config["Targets:" + extensionKey + ":Overwrite"], out overwrite);
         target = Path.Combine(targetDir, filename);
 
         return true;
