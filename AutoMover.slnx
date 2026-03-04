@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="AutoMover.Test/AutoMover.Test.csproj" />
+  <Project Path="AutoMover/AutoMover.csproj" />
+</Solution>

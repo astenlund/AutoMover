@@ -3,3 +3,4 @@ _ReSharper.AutoMover/
 */obj/
 .idea/
 packages/
+*.user
