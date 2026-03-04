@@ -92,6 +92,12 @@ public static class Program
 
         if (string.IsNullOrEmpty(targetDir))
         {
+            extensionKey = extension;
+            targetDir = config["Targets:" + extensionKey + ":Directory"];
+        }
+
+        if (string.IsNullOrEmpty(targetDir))
+        {
             ErrorMessage("No target directory configured for extension '" + extensionKey + "'");
 
             return false;

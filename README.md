@@ -26,7 +26,7 @@ Create an `appsettings.json` file alongside the executable. The `Targets` sectio
 
 - **Directory** (required) — the full path to the target directory. The directory must already exist.
 - **Overwrite** (optional) — whether to overwrite an existing file at the target. Defaults to `false`.
-- Extension keys are bare names **without the leading dot** (e.g. `torrent`, not `.torrent`).
+- Extension keys can be specified with or without the leading dot (e.g. both `torrent` and `.torrent` work).
 - Extension matching is **case-insensitive**.
 
 ## Usage
