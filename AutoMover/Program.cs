@@ -37,7 +37,7 @@ public static class Program
         }
 
         var appSettings = new AppSettings();
-        config.Bind(appSettings);
+        config.GetSection(nameof(AppSettings.Targets)).Bind(appSettings.Targets);
 
         if (!fileMover.TryGetTargetPath(out var target, out var overwrite, source, appSettings))
         {

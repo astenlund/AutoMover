@@ -67,6 +67,14 @@ public class FileMover(IFileSystem fileSystem, IErrorReporter errorReporter)
     {
         try
         {
+            if (!overwrite && fileSystem.FileExists(target))
+            {
+                if (!errorReporter.AskConfirmation("File already exists: " + target + "\n\nDo you want to replace it?"))
+                    return false;
+
+                overwrite = true;
+            }
+
             fileSystem.MoveFile(source, target, overwrite);
             return true;
         }

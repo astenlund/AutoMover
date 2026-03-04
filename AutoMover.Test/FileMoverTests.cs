@@ -254,5 +254,52 @@ public class FileMoverTests
         Assert.That(_errorReporter.Errors, Is.Empty);
     }
 
+    [Test]
+    public void TryMove_FileExistsNoOverwrite_PromptsUser()
+    {
+        _fileSystem.ExistingFiles.Add("/target/file.txt");
+        _errorReporter.ConfirmationResult = true;
+
+        var result = _fileMover.TryMove("/source/file.txt", "/target/file.txt", false);
+
+        Assert.That(result, Is.True);
+        Assert.That(_errorReporter.Confirmations, Has.Count.EqualTo(1));
+        Assert.That(_errorReporter.Confirmations[0], Does.Contain("already exists"));
+        Assert.That(_fileSystem.MovedFiles[0].Overwrite, Is.True);
+    }
+
+    [Test]
+    public void TryMove_FileExistsNoOverwrite_UserDeclinesReturns_False()
+    {
+        _fileSystem.ExistingFiles.Add("/target/file.txt");
+        _errorReporter.ConfirmationResult = false;
+
+        var result = _fileMover.TryMove("/source/file.txt", "/target/file.txt", false);
+
+        Assert.That(result, Is.False);
+        Assert.That(_fileSystem.MovedFiles, Is.Empty);
+    }
+
+    [Test]
+    public void TryMove_FileExistsWithOverwrite_DoesNotPrompt()
+    {
+        _fileSystem.ExistingFiles.Add("/target/file.txt");
+
+        var result = _fileMover.TryMove("/source/file.txt", "/target/file.txt", true);
+
+        Assert.That(result, Is.True);
+        Assert.That(_errorReporter.Confirmations, Is.Empty);
+        Assert.That(_fileSystem.MovedFiles[0].Overwrite, Is.True);
+    }
+
+    [Test]
+    public void TryMove_FileDoesNotExist_DoesNotPrompt()
+    {
+        var result = _fileMover.TryMove("/source/file.txt", "/target/file.txt", false);
+
+        Assert.That(result, Is.True);
+        Assert.That(_errorReporter.Confirmations, Is.Empty);
+    }
+
     #endregion
 }

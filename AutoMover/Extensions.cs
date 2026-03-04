@@ -6,7 +6,7 @@ public static class Extensions
     {
         public string RemoveLeading(string substring)
         {
-            return str.StartsWith(substring) ? str.Substring(substring.Length, str.Length - substring.Length) : str;
+            return str.StartsWith(substring) ? str[substring.Length..] : str;
         }
     }
 }

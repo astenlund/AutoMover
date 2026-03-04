@@ -54,7 +54,7 @@ public class AppSettingsTests
             .Build();
 
         var settings = new AppSettings();
-        config.Bind(settings);
+        config.GetSection(nameof(AppSettings.Targets)).Bind(settings.Targets);
 
         Assert.That(settings.Targets, Has.Count.EqualTo(2));
         Assert.That(settings.Targets["txt"].Directory, Is.EqualTo("/tmp/text"));
@@ -76,7 +76,7 @@ public class AppSettingsTests
             .Build();
 
         var settings = new AppSettings();
-        config.Bind(settings);
+        config.GetSection(nameof(AppSettings.Targets)).Bind(settings.Targets);
 
         Assert.That(settings.Targets.ContainsKey("txt"), Is.True);
     }
