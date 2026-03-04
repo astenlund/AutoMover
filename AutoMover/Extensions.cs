@@ -8,10 +8,5 @@ public static class Extensions
         {
             return str.StartsWith(substring) ? str.Substring(substring.Length, str.Length - substring.Length) : str;
         }
-
-        public string FormatFileExtension()
-        {
-            return str.RemoveLeading(".").ToUpperInvariant();
-        }
     }
 }

@@ -1,4 +1,6 @@
-﻿using static System.Windows.Forms.MessageBoxButtons;
+using Microsoft.Extensions.Configuration;
+
+using static System.Windows.Forms.MessageBoxButtons;
 using static System.Windows.Forms.MessageBoxIcon;
 
 namespace AutoMover;
@@ -26,7 +28,15 @@ public static class Program
             Environment.Exit(1);
         }
 
-        File.Move(source, target);
+        try
+        {
+            File.Move(source, target);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage("Failed to move file: " + ex.Message);
+            Environment.Exit(1);
+        }
     }
 
     private static bool GetSourcePath(string[] args, out string source)
@@ -36,6 +46,7 @@ public static class Program
         if (!File.Exists(source))
         {
             ErrorMessage("Source file could not be found: " + source);
+
             return false;
         }
 
@@ -46,11 +57,20 @@ public static class Program
     {
         target = string.Empty;
 
-        var targetConfigFile = Path.Combine(Environment.CurrentDirectory, "target.txt");
+        IConfiguration config;
 
-        if (!File.Exists(targetConfigFile))
+        try
         {
-            ErrorMessage("Target config file not found: " + targetConfigFile);
+            config = new ConfigurationBuilder()
+                .SetBasePath(Environment.CurrentDirectory)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+                .Build();
+        }
+        catch (FileNotFoundException)
+        {
+            var configPath = Path.Combine(Environment.CurrentDirectory, "appsettings.json");
+            ErrorMessage("Config file not found: " + configPath);
+
             return false;
         }
 
@@ -60,52 +80,29 @@ public static class Program
         if (string.IsNullOrEmpty(extension))
         {
             ErrorMessage("Unable to extract extension from source filename: " + filename);
+
             return false;
         }
 
-        var targetDir = GetTargetDir(targetConfigFile, extension);
+        var targetDir = config["Targets:" + extension.RemoveLeading(".")];
 
         if (string.IsNullOrEmpty(targetDir))
         {
-            ErrorMessage("Syntax error in target config file. Location of file: " + targetConfigFile);
+            ErrorMessage("No target directory configured for extension '" + extension.RemoveLeading(".") + "'");
+
             return false;
         }
 
         if (!Directory.Exists(targetDir))
         {
             ErrorMessage("Target directory could not be found: " + targetDir);
+
             return false;
         }
 
         target = Path.Combine(targetDir, filename);
 
         return true;
-    }
-
-    private static string GetTargetDir(string targetConfigFile, string extension)
-    {
-        var targetConfig = ParseTargetConfig(targetConfigFile);
-
-        return targetConfig[extension.FormatFileExtension()];
-    }
-
-    private static Dictionary<string, string> ParseTargetConfig(string targetConfigFile)
-    {
-        var result = new Dictionary<string, string>();
-
-        foreach (var tuple in File.ReadLines(targetConfigFile)
-                     .SkipWhile(s => s.StartsWith("#"))
-                     .Select(s => Array.ConvertAll(s.Split('='), input => input.Trim()))
-                     .TakeWhile(arr => arr.Length == 2)
-                     .Select(strings => new Tuple<string, string>(strings[0].FormatFileExtension(), strings[1])))
-        {
-            var ext = tuple.Item1;
-            var dir = tuple.Item2;
-
-            result[ext] = dir;
-        }
-
-        return result;
     }
 
     private static void ErrorMessage(string msg)
