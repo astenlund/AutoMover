@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Configuration;
 
 using static System.Windows.Forms.MessageBoxButtons;
@@ -24,7 +23,28 @@ public static class Program
             Environment.Exit(1);
         }
 
-        if (!GetTargetPath(out var target, out var overwrite, source))
+        IConfiguration config;
+
+        try
+        {
+            config = new ConfigurationBuilder()
+                .SetBasePath(Environment.CurrentDirectory)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+                .Build();
+        }
+        catch (FileNotFoundException)
+        {
+            var configPath = Path.Combine(Environment.CurrentDirectory, "appsettings.json");
+            ErrorMessage("Config file not found: " + configPath);
+            Environment.Exit(1);
+
+            return;
+        }
+
+        var appSettings = new AppSettings();
+        config.Bind(appSettings);
+
+        if (!GetTargetPath(out var target, out var overwrite, source, appSettings))
         {
             Environment.Exit(1);
         }
@@ -54,28 +74,10 @@ public static class Program
         return true;
     }
 
-    [SuppressMessage("Performance", "CA1806:Do not ignore method results", Justification = "bool.TryParse sets the out parameter to false on failure, which is the desired default")]
-    private static bool GetTargetPath(out string target, out bool overwrite, string source)
+    private static bool GetTargetPath(out string target, out bool overwrite, string source, AppSettings appSettings)
     {
         target = string.Empty;
         overwrite = false;
-
-        IConfiguration config;
-
-        try
-        {
-            config = new ConfigurationBuilder()
-                .SetBasePath(Environment.CurrentDirectory)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-                .Build();
-        }
-        catch (FileNotFoundException)
-        {
-            var configPath = Path.Combine(Environment.CurrentDirectory, "appsettings.json");
-            ErrorMessage("Config file not found: " + configPath);
-
-            return false;
-        }
 
         var filename = Path.GetFileName(source);
         var extension = Path.GetExtension(filename);
@@ -88,30 +90,29 @@ public static class Program
         }
 
         var extensionKey = extension.RemoveLeading(".");
-        var targetDir = config["Targets:" + extensionKey + ":Directory"];
 
-        if (string.IsNullOrEmpty(targetDir))
+        if (!appSettings.Targets.TryGetValue(extensionKey, out var targetOptions))
         {
             extensionKey = extension;
-            targetDir = config["Targets:" + extensionKey + ":Directory"];
+            appSettings.Targets.TryGetValue(extensionKey, out targetOptions);
         }
 
-        if (string.IsNullOrEmpty(targetDir))
+        if (targetOptions is null || string.IsNullOrEmpty(targetOptions.Directory))
         {
             ErrorMessage("No target directory configured for extension '" + extensionKey + "'");
 
             return false;
         }
 
-        if (!Directory.Exists(targetDir))
+        if (!Directory.Exists(targetOptions.Directory))
         {
-            ErrorMessage("Target directory could not be found: " + targetDir);
+            ErrorMessage("Target directory could not be found: " + targetOptions.Directory);
 
             return false;
         }
 
-        bool.TryParse(config["Targets:" + extensionKey + ":Overwrite"], out overwrite);
-        target = Path.Combine(targetDir, filename);
+        overwrite = targetOptions.Overwrite;
+        target = Path.Combine(targetOptions.Directory, filename);
 
         return true;
     }
